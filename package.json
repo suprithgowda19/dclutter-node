@@ -1,0 +1,15 @@
+{
+  "name": "dclutter",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,WEB\" -c \"blue,green\" \"npm --prefix backend run dev\" \"npm --prefix frontend/web run dev\"",
+    "dev:all": "concurrently -n \"BACKEND,WEB,MOBILE\" -c \"blue,green,magenta\" \"npm --prefix backend run dev\" \"npm --prefix frontend/web run dev\" \"npm --prefix frontend/mobile start\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix frontend/web run dev",
+    "dev:mobile": "npm --prefix frontend/mobile start"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

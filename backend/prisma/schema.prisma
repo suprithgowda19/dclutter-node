@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String?  @unique
+  phone           String?  @unique
+  password        String
+  role            Role     @default(USER)
+  corporationIds  Int[]    @default([])
+  constituencyIds Int[]    @default([])
+  wardIds         Int[]    @default([])
+  vehicles        Vehicle[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+  OFFICIAL
+  VEHICLE
+}
+
+model Corporation {
+  id             Int            @id @default(autoincrement())
+  name           String
+  nameKn         String?
+  boneMerchantId String?
+  meatMerchantId String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  constituencies Constituency[]
+  plants         Plant[]
+
+  @@map("corporations")
+}
+
+model Constituency {
+  id            Int          @id @default(autoincrement())
+  corporationId Int
+  corporation   Corporation  @relation(fields: [corporationId], references: [id], onDelete: Cascade)
+  acNo          Int?
+  name          String
+  nameKn        String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  wards         Ward[]
+  plants        Plant[]
+
+  @@index([corporationId])
+  @@map("constituencies")
+}
+
+model Ward {
+  id             Int          @id @default(autoincrement())
+  constituencyId Int
+  constituency   Constituency @relation(fields: [constituencyId], references: [id], onDelete: Cascade)
+  wardNumber     Int?
+  name           String
+  nameKn         String?
+  boundry        String?      @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([constituencyId])
+  @@index([wardNumber])
+  @@map("wards")
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String        @unique
+  icon          String?
+  status        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  subcategories Subcategory[]
+
+  @@map("categories")
+}
+
+model Subcategory {
+  id         Int      @id @default(autoincrement())
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name       String
+  icon       String?
+  status     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([categoryId])
+  @@map("subcategories")
+}
+
+model Plant {
+  id             Int          @id @default(autoincrement())
+  name           String
+  corporationId  Int
+  corporation    Corporation  @relation(fields: [corporationId], references: [id], onDelete: Cascade)
+  constituencyId Int
+  constituency   Constituency @relation(fields: [constituencyId], references: [id], onDelete: Cascade)
+  address        String?      @db.Text
+  latitude       Float?
+  longitude      Float?
+  status         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([corporationId])
+  @@index([constituencyId])
+  @@map("plants")
+}
+
+model Vehicle {
+  id                Int       @id @default(autoincrement())
+  vehicleNumber     String    @unique
+  normalizedNumber  String    @unique
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  constituencyIds   Int[]     @default([])
+  vehicleType       String
+  capacityTons      Float
+  vehiclePhoto      String?
+  rcDocument        String?
+  fitnessDocument   String?
+  insuranceDocument String?
+  driverName        String
+  driverPhone       String    @unique
+  licenseNumber     String    @unique
+  licensePhoto      String?
+  status            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([vehicleNumber])
+  @@index([driverPhone])
+  @@map("vehicles")
+}

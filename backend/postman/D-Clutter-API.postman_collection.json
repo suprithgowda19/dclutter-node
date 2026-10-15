@@ -1,0 +1,843 @@
+{
+  "info": {
+    "_postman_id": "130206dc-2c66-4f19-add4-2b460d58e1ef",
+    "name": "D-Clutter Backend API",
+    "description": "Comprehensive Postman collection for D-Clutter Solid Waste Management platform.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{adminToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "0. Health Check",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register Admin / User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Municipal Admin\",\n  \"email\": \"admin@dclutter.gov.in\",\n  \"phone\": \"9876543210\",\n  \"password\": \"Admin@12345\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Sets adminToken)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.token) {",
+                  "    pm.environment.set('adminToken', res.data.token);",
+                  "    console.log('Saved adminToken to environment');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@dclutter.gov.in\",\n  \"password\": \"Admin@12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Geographic Hierarchy & GIS (Public)",
+      "item": [
+        {
+          "name": "Get Corporations",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geo/corporations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geo",
+                "corporations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Constituencies (by Corporation)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geo/constituencies?corporationId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geo",
+                "constituencies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Wards (by Constituency)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geo/wards?constituencyId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geo",
+                "wards"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Ward by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geo/wards/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geo",
+                "wards",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Spatial Lookup Ward (Ray-Casting GPS)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geo/lookup-ward?lat=12.9716&lng=77.5946",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geo",
+                "lookup-ward"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GIS Map Boundaries (GeoJSON)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/geo/gis/wards?constituencyId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "geo",
+                "gis",
+                "wards"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Public Masters (Citizen / Vehicle)",
+      "item": [
+        {
+          "name": "Get All Categories (with Subcategories)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Category by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Processing Plants",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plants"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Plant by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plants/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plants",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Plants by Name or Address",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plants?search=Seegehalli",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plants"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Admin - Categories",
+      "item": [
+        {
+          "name": "Admin List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hazardous Household Waste\",\n  \"icon\": \"fa-triangle-exclamation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"icon\": \"fa-couch-updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Toggle Category Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories/1/toggle-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories",
+                "1",
+                "toggle-status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/categories/99",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "categories",
+                "99"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Admin - Subcategories",
+      "item": [
+        {
+          "name": "Admin List Subcategories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/subcategories?categoryId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "subcategories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Create Subcategory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": 1,\n  \"name\": \"Dining Table\",\n  \"icon\": \"fa-table\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/subcategories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "subcategories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Update Subcategory",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Solid Wood Dining Table\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/subcategories/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "subcategories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Toggle Subcategory Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/subcategories/1/toggle-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "subcategories",
+                "1",
+                "toggle-status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Delete Subcategory",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/subcategories/99",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "subcategories",
+                "99"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Admin - Plants",
+      "item": [
+        {
+          "name": "Admin List Plants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/plants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plants"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Create Plant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Chikkanagamangala Waste Processing Facility\",\n  \"corporationId\": 1,\n  \"constituencyId\": 1,\n  \"address\": \"Chikkanagamangala, Electronic City Post, Bengaluru 560100\",\n  \"latitude\": 12.8712,\n  \"longitude\": 77.6845,\n  \"status\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/plants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plants"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Get Plant by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/plants/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plants",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Update Plant",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"Updated address with Landmark: Near Toll Plaza\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/plants/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plants",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Toggle Plant Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/plants/1/toggle-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plants",
+                "1",
+                "toggle-status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Delete Plant",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/plants/99",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "plants",
+                "99"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Admin - Vehicles",
+      "item": [
+        {
+          "name": "Admin List Vehicles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/vehicles"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Register Vehicle (Creates Driver User)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicleNumber\": \"KA-02-AB-3344\",\n  \"vehicleType\": \"Tipper\",\n  \"capacity\": 2500,\n  \"driverName\": \"Kiran Kumar\",\n  \"driverPhone\": \"9845077112\",\n  \"driverEmail\": \"kiran.driver@dclutter.gov.in\",\n  \"licenseNumber\": \"KA0220220003344\",\n  \"constituencyIds\": [\n    1,\n    2\n  ],\n  \"defaultPassword\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/vehicles"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Get Vehicle by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/vehicles/1"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Toggle Vehicle Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/vehicles/1/toggle-status"
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

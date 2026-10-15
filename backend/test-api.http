@@ -1,0 +1,122 @@
+### Base Variables
+@baseUrl = http://localhost:5001/api
+@token = 
+
+### 0. Health Check
+GET {{baseUrl}}/health
+
+### 1. Register Admin
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Municipal Admin",
+  "email": "admin@dclutter.gov.in",
+  "phone": "9876543210",
+  "password": "Admin@12345",
+  "role": "ADMIN"
+}
+
+### 2. Login Admin
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@dclutter.gov.in",
+  "password": "Admin@12345"
+}
+
+### Save Token from Login
+@authToken = {{login.response.body.data.token}}
+
+### 3. Get Current User Profile (Me)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{authToken}}
+
+### 4. Get Corporations
+GET {{baseUrl}}/geo/corporations
+
+### 5. Get Constituencies
+GET {{baseUrl}}/geo/constituencies?corporationId=1
+
+### 6. Get Wards
+GET {{baseUrl}}/geo/wards?constituencyId=1
+
+### 7. Lookup Ward by GPS (Spatial Point-in-Polygon)
+GET {{baseUrl}}/geo/lookup-ward?lat=12.9716&lng=77.5946
+
+### 8. Get Public Categories with Subcategories
+GET {{baseUrl}}/categories
+
+### 9. Get Single Category
+GET {{baseUrl}}/categories/6
+
+### 10. Get Public Plants
+GET {{baseUrl}}/plants
+
+### 11. Search Plants
+GET {{baseUrl}}/plants?search=Seegehalli
+
+### 12. Admin List Categories
+GET {{baseUrl}}/admin/categories
+Authorization: Bearer {{authToken}}
+
+### 13. Admin Create Category
+POST {{baseUrl}}/admin/categories
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "E-Waste & Batteries",
+  "icon": "fa-battery-full"
+}
+
+### 14. Admin List Plants
+GET {{baseUrl}}/admin/plants
+Authorization: Bearer {{authToken}}
+
+### 15. Admin Create Plant
+POST {{baseUrl}}/admin/plants
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Hebbal Biomethanation Facility",
+  "corporationId": 1,
+  "constituencyId": 1,
+  "address": "Hebbal Kempapura, Bengaluru 560024",
+  "latitude": 13.045,
+  "longitude": 77.592,
+  "status": true
+}
+
+### 16. Admin List Vehicles
+GET {{baseUrl}}/admin/vehicles
+Authorization: Bearer {{authToken}}
+
+### 17. Admin Register Vehicle (Auto-provisions Driver User in `users` table)
+POST {{baseUrl}}/admin/vehicles
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "vehicleNumber": "KA-05-MK-9911",
+  "vehicleType": "Tipper",
+  "capacity": 2.5,
+  "driverName": "Suresh Gowda",
+  "driverPhone": "9845099887",
+  "driverEmail": "suresh.driver@dclutter.gov.in",
+  "licenseNumber": "KA0520210009911",
+  "constituencyIds": [1, 2],
+  "defaultPassword": "1234"
+}
+
+### 18. Admin Get Vehicle by ID
+GET {{baseUrl}}/admin/vehicles/1
+Authorization: Bearer {{authToken}}
+
+### 19. Admin Toggle Vehicle Status
+PATCH {{baseUrl}}/admin/vehicles/1/toggle-status
+Authorization: Bearer {{authToken}}
